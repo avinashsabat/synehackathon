@@ -12,24 +12,48 @@ load_dotenv()
 llm = ChatOpenAI(model="o1-mini", api_key=os.getenv("OPENAI_API_KEY"))
 
 # === Prompt Template ===
-analysis_prompt = PromptTemplate.from_template("""
+CAB_PROMPT = PromptTemplate.from_template("""
 You are a document analysis assistant.
 
-Given the following document content, analyze it based on the user's needs.
+Given the following Central Analysis Bureau (CAB) document content, analyze it based on the user's needs. We specifically want to identify and extract the Department of Transportation (DOT) score, the financial score, and basic scores.
 
 Document Content:
 {document_text}
 
 Return a Python dictionary as a string containing your analysis. Example format:
 {{
-    "summary": "...",
-    "key_topics": ["...", "..."],
-    "suggested_actions": ["...", "..."]
+    "dot_score": "..."
+    "financial_score": "...",
+    "basic_scores": ["...","..."],
 }}
 
 Do NOT add any additional tags, quotation marks, or other symbols before or after the dictionary.
 Perform the analysis now.
 """)
+
+JUDICIAL_HELLHOLE_PROMPT = PromptTemplate.from_template("""
+You are a document analysis assistant that specializes in extracting information on Judicial Hellholes.
+
+Given the following document text reporting the year's worth of reporting the locations and details of current judicial hellholes, analyze it based on the user's needs.
+
+Document Content:
+{document_text}
+
+Return a Python list of dictionaries as a string containing your analysis. Example format:
+[
+    {{
+        "city": "...",
+        "district": "...",
+        "risk-level": "..."
+    }},
+    ...
+]
+
+Do NOT add any additional tags, quotation marks, or other symbols before or after the list. Each dictionary item in the list should have the exact same format.
+Perform the analysis now.
+""")
+
+analysis_prompt = JUDICIAL_HELLHOLE_PROMPT
 
 # === Step 1: Extract text from PDF ===
 def extract_text_step(inputs):
